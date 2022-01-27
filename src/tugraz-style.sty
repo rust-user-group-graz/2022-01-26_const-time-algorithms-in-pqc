@@ -1,0 +1,607 @@
+% Bibliography/Citation format
+\usepackage{appendixnumberbeamer}
+\usepackage[backend=biber,style=alphabetic,giveninits=true,maxnames=16,minnames=16,bibencoding=utf8]{biblatex}
+\renewcommand*{\bibfont}{\small}
+\addbibresource{\jobname.bib}
+\DeclareFieldFormat*{title}{#1} 
+\DeclareFieldFormat*{booktitle}{#1}  
+\DeclareFieldFormat*{journaltitle}{#1}  
+\newcommand{\citeA}[1]{\citeauthor{#1}~\cite{#1}}
+
+\usetikzlibrary{external}
+\usetikzlibrary{shapes.geometric, arrows,shapes.arrows,shapes.misc}
+% Beautiful tables
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{adjustbox}
+% Beautiful plots
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+
+% Drawing
+\usetikzlibrary{shapes.geometric, arrows,shapes.arrows,shapes.misc}
+% \usetikzlibrary{external}
+% \tikzexternalize[prefix=figures/,mode=list and make]
+\newcommand<>{\tagWarning}[3]{
+\begin{tikzpicture}[remember picture,overlay]\node#4[xshift=#1cm,yshift=-#2cm,fill=yellow!90!black,draw=gray,rounded corners=3pt,scale=0.8] at (current page.north west) {{\transparent{0.75} {#3~}}};\end{tikzpicture}
+}
+\newcommand<>{\tagDanger}[3]{
+\begin{tikzpicture}[remember picture,overlay]\node#4[xshift=#1cm,yshift=-#2cm,fill=red!90!black,draw=gray,rounded corners=3pt,scale=0.8] at (current page.north west) {{\transparent{0.75} \textcolor{white}{#3~}}};\end{tikzpicture}
+}
+\newcommand<>{\tagSuccess}[3]{
+\begin{tikzpicture}[remember picture,overlay]\node#4[xshift=#1cm,yshift=-#2cm,fill=green!90!black,draw=gray,rounded corners=3pt,scale=0.8] at (current page.north west) {{\transparent{0.75} {#3~}}};\end{tikzpicture}
+}
+\newcommand<>{\textat}[3]{
+\begin{tikzpicture}[remember picture,overlay]\node#4[xshift=#1cm,yshift=-#2cm,fill=none,draw=none] at (current page.north west) {{#3}};\end{tikzpicture}
+}
+\newcommand<>{\imgat}[4]{
+\begin{tikzpicture}[remember picture,overlay]\node#5[xshift=#1cm,yshift=-#2cm,fill=none,draw=none] at (current page.north west) {\includegraphics[#3]{#4}};\end{tikzpicture}
+}
+
+\usepackage[nomessages]{fp}
+\usepackage{diagbox}
+\usepackage{bytefield}
+
+\newcommand{\colorbitbox}[3]{%
+\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+\bitbox{#2}{#3}}
+
+%
+% http://www.martin-demling.de/2011/06/memory-maps-in-latex-using-the-bytefield-package/
+%
+% facilitates the creation of memory maps. Start address at the bottom, end address at the top.
+% syntax: \memsection{end address}{start address}{height in lines}{bgcolor}{text in box}
+\newcommand{\memsection}[5]{
+        \bytefieldsetup{bitheight=#3\baselineskip}    % define the height of the memsection
+        \bitbox[]{7}{
+                \texttt{#1}     % print end address
+                \\ \vspace{#3\baselineskip} \vspace{-2\baselineskip} \vspace{-#3pt} % do some spacing
+                \texttt{#2} % print start address
+        }
+        \colorbitbox{#4}{6}{#5} % print box with caption
+}
+
+
+\newcommand<>{\drawsector}[6][]{
+    \ifx\relax#7\relax
+    \draw[#1] (#4:{#2-.5*#3}) arc [start angle = #4, delta angle=-#5, radius={#2-.5*#3}]--++({#4-#5}:#3) arc [start angle = {#4- #5}, delta angle=#5, radius={#2+.5*#3}] --cycle;
+    \else
+    \draw#7[#1] (#4:{#2-.5*#3}) arc [start angle = #4, delta angle=-#5, radius={#2-.5*#3}]--++({#4-#5}:#3) arc [start angle = {#4- #5}, delta angle=#5, radius={#2+.5*#3}] --cycle;
+    \fi
+}
+\newcommand<>{\benchmark}[1] {
+\begin{tikzpicture}[scale=0.3]
+  \ifx\relax#2\relax
+  \drawsector[left color=green!70, right color=red!70]{1.5}{0.5}{160}{140}{}
+  \else
+  \drawsector#2[left color=green!70, right color=red!70]{1.5}{0.5}{160}{140}{}
+  \fi
+  \FPeval\xto{cos(((100-#1) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+  \FPeval\yto{sin(((100-#1) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+  \ifx\relax#2\relax
+  \draw[-latex',thick] (0,0) to (\xto,\yto);
+  \else
+  \draw#2[-latex',thick] (0,0) to (\xto,\yto);
+  \fi
+\end{tikzpicture}
+}
+\newcommand<>{\benchmarksmall}[3] {
+    \begin{scope}[shift={(#1,#2)},scale=0.4]
+      \drawsector#4[left color=green!70, right color=red!70]{1.5}{0.5}{160}{140}{}
+      \FPeval\xto{cos(((100-#3) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+      \FPeval\yto{sin(((100-#3) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+      \draw#4[thick,->,>=stealth] (0,0) to (\xto,\yto);
+    \end{scope}
+}
+
+\newcommand<>{\benchmarksmallinv}[3] {
+    \begin{scope}[shift={(#1,#2)},scale=0.4]
+      \drawsector#4[left color=red!70, right color=green!70]{1.5}{0.5}{160}{140}{}
+      \FPeval\xto{cos(((100-#3) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+      \FPeval\yto{sin(((100-#3) / 100 * 140 + 20) / 180 * 3.14159) * 1.1}
+      \draw#4[thick,->,>=stealth] (0,0) to (\xto,\yto);
+    \end{scope}
+}
+
+
+\usepackage{collcell}
+\usepackage{ifthenx}
+\usepackage[eulergreek]{sansmath}
+\usepackage{arydshln}
+
+% Typographic stuff
+\usepackage{xspace}
+\newcommand{\xor}{\oplus}
+\usepackage[binary-units=true]{siunitx}
+\DeclareSIUnit{\bits}{bits}
+\sisetup{group-separator = \text{\,}}
+\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
+% more typography
+\newcommand{\etal}{et~al.\ } % typography nerd
+\newcommand{\ie}{\textit{i.e.},\ } % typography nerd
+\newcommand{\eg}{e.g.,\ } % typography nerd
+\newcommand{\Eg}{E.g.,\ } % typography nerd
+\newcommand{\cf}{cf.\ } % typography nerd
+\newcommand{\FlushReload}{Flush+\allowbreak Reload\xspace}
+\mathchardef\mhyphen="2D
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{10}  % for normal
+\DeclareFixedFont{\ttms}{T1}{txtt}{m}{n}{7}  % for normal
+\usepackage{fontawesome}
+
+\newcommand{\arrow}{$\rightarrow$\xspace}
+
+
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+% Beautiful listings
+\usepackage{listings} 
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  language=C,                      % the language of the code
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny,               % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  tabsize=2                        % sets default tabsize to 2 spaces
+  %title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\lstdefinelanguage
+   [x64]{Assembler}     % add a "x64" dialect of Assembler
+   [x86masm]{Assembler} % based on the "x86masm" dialect
+   % with these extra keywords:
+   {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD, %
+                  POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS, %
+                  rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp, %
+                  r8,r8d,r8w,r8b,r9,r9d,r9w,r9b}} % etc.
+                  
+\lstdefinestyle{customc}
+{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  backgroundcolor=,
+  numbers=none,
+  frame=none,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\ttfamily\itshape\color{purple!40!black},
+  identifierstyle=\color{black},
+  stringstyle=\color{red!70!black},
+  morekeywords={doublefetch_t}
+}
+
+
+\lstdefinestyle{customcpp}
+{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=none,
+  numbers=none,
+  backgroundcolor=,
+  xleftmargin=\parindent,
+  language=C++,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{black},
+  stringstyle=\color{red!70!black}
+}
+
+\lstdefinestyle{customasm}
+{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=none,
+  backgroundcolor=,
+  numbers=none,
+  xleftmargin=\parindent,
+  language={[x86masm]Assembler},
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{black},
+  stringstyle=\color{red!70!black},
+  morekeywords={cdqe,cqo,cmpsq,callq,nopl,retq,cmpxchg16b,jrcxz,lodsq,movsxd, %
+                  pushl,popl,outb,orb,cmpl,salb,testl,orl,inb,inl,subl,adcb,testb,addb,xorb,adcl,popfq,pushq,movq,subq,addq,popq,movl,addl,cmpq,pushfq,scasq,stosq,iretq,rdtscp,swapgs, %
+                  rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp, %
+                  r8,r8d,r8w,r8b,r9,r9d,r9w,r9b, %
+                  r10,r10d,r10w,r10b,r11,r11d,r11w,r11b, %
+                  r12,r12d,r12w,r12b,r13,r13d,r13w,r13b, %
+                  r14,r14d,r14w,r14b,r15,r15d,r15w,r15b}
+}
+
+\lstset{escapeinside={(*@}{@*)}}
+
+% Terminal including support for asciicast2vector (https://github.com/misc0110/asciicast2vector)
+
+\definecolor{tgreen}{HTML}{14FDCE}
+\definecolor{tblack}{HTML}{06381B}
+\lstdefinestyle{Terminal}
+{
+    backgroundcolor=\color{tblack},
+    basicstyle=\color{tgreen}\ttfamily,
+    xleftmargin=6pt,
+    framexleftmargin=6pt,
+    framextopmargin=6pt,
+    framexbottommargin=6pt,
+    numbers=none
+}
+\lstdefinestyle{SmallTerminal}
+{
+    backgroundcolor=\color{tblack},
+    basicstyle=\scriptsize\color{tgreen}\ttfamily,
+    xleftmargin=6pt,
+    framexleftmargin=6pt,
+    framextopmargin=6pt,
+    framexbottommargin=6pt,
+    numbers=none
+}
+
+\newcommand\Highlight[1]{\textcolor{highlight}{#1}}
+\newcommand\HighlightD[1]{\textcolor{highlightd}{#1}}
+
+\newenvironment{Plain}[1][]
+  { \VerbatimEnvironment%
+    \begin{Verbatim}[#1]}
+  { \end{Verbatim}  } 
+  
+\usepackage{pmboxdraw}
+\definecolor{ansi0}{RGB}{1,1,1}
+\definecolor{ansi1}{RGB}{222,56,43}
+\definecolor{ansi2}{RGB}{57,181,74}
+\definecolor{ansi3}{RGB}{255,199,6}
+\definecolor{ansi4}{RGB}{0,111,184}
+\definecolor{ansi5}{RGB}{118,38,113}
+\definecolor{ansi6}{RGB}{44,181,233}
+\definecolor{ansi7}{RGB}{204,204,204}
+\definecolor{ansi8}{RGB}{128,128,128}
+\definecolor{ansi9}{RGB}{255,0,0}
+\definecolor{ansi10}{RGB}{0,255,0}
+\definecolor{ansi11}{RGB}{255,255,0}
+\definecolor{ansi12}{RGB}{0,0,255}
+\definecolor{ansi13}{RGB}{255,0,255}
+\definecolor{ansi14}{RGB}{0,255,255}
+\definecolor{ansi15}{RGB}{255,255,255}
+
+\definecolor{lightbg}{RGB}{220,210,195}
+
+
+\newcommand{\quem}{\tikz[baseline=(wi.base)]{\node[fill=black,rotate=45,inner sep=.1ex, text height=1.8ex, text width=1.8ex] {};%
+\node[ font=\color{white}] (wi) {?};}}
+\newcommand{\tquem}{\tikz[baseline=(wi.base)]{\node[fill=tgreen,rotate=45,inner sep=.1ex, text height=1.4ex, text width=1.4ex] {};%
+\node[ font=\color{tblack}] (wi) {?};}}
+  
+\definecolor{light-gray}{HTML}{EEEEEE}
+\newcommand{\command}[1]{%
+  \begingroup\setlength{\fboxsep}{4pt}% no padding
+  \colorbox{light-gray}{\texttt{#1}}%
+  \endgroup
+}
+
+\usepackage{linehighlight}
+% set colors for code background and highlighting
+\definecolor{codehighlight}{rgb}{0.95,0.8,0.8}
+\definecolor{codebackground}{rgb}{0.95,0.95,0.95}
+
+% Logos in the title
+\newcommand{\logoTitle}[1]{\tikz [remember picture,overlay]%
+    \node at%
+        ([yshift=0.48\textheight-0.1em,xshift=-6em]current page.east)%
+        {\includegraphics[height=.1\textheight]{#1}};}%
+        
+        
+\newcommand{\logoPeople}[1]{\tikz [remember picture,overlay]%
+    \node[#1,minimum height=.1\textheight] at%
+        ([yshift=0.48\textheight-0.1em,xshift=-6em]current page.east)%
+        {};}%
+      
+% \usepackage{tikzpeople}
+
+\newcommand{\textimg}[1]{\includegraphics[height=0.95em]{#1}}
+
+
+% Miscellaneous stuff
+\usepackage{comment}
+\usepackage{transparent}
+\metroset{block=fill}
+
+\newenvironment{imgframe}[2][20]
+{
+\FPeval\wleft{(#1 / 100)}
+\FPeval\wright{(0.99 - (#1 / 100))}
+\begin{columns}
+   \begin{column}{\wleft\hsize}
+     \begin{centering}
+       \includegraphics[width=1.0\hsize]{#2}
+     \end{centering}
+   \end{column}
+   \begin{column}{\wright\hsize}
+}
+{
+   \end{column}
+\end{columns}
+}
+
+\newenvironment{imgframerev}[2][20]
+{
+\FPeval\wleft{(#1 / 100)}
+\FPeval\wright{(0.99 - (#1 / 100))}
+\def\imgframerevgraphicsI{#2}
+\begin{columns}
+   \begin{column}{\wright\hsize}
+}
+{
+   \end{column}
+   \begin{column}{\wleft\hsize}
+     \begin{centering}
+       \includegraphics[width=1.0\hsize]{\imgframerevgraphicsI}
+     \end{centering}
+   \end{column}
+\end{columns}
+}
+
+\newenvironment{imgframetikz}[2][20]
+{
+\FPeval\wleft{(#1 / 100)}
+\FPeval\wright{(0.99 - (#1 / 100))}
+\begin{columns}
+   \begin{column}{\wleft\hsize}
+    \resizebox{\hsize}{!}{
+      \input{#2}
+    }
+   \end{column}
+   \begin{column}{\wright\hsize}
+}
+{
+   \end{column}
+\end{columns}
+}
+
+
+% Images 
+\newcommand{\frameimg}[3][]{
+\ifx\relax#1\relax
+  \FPeval\wleft{0.24}
+  \FPeval\wright{0.75}
+\else
+  \FPeval\wleft{(#1 / 100)}
+  \FPeval\wright{(0.99 - (#1 / 100))}
+\fi
+\begin{columns}
+   \begin{column}{\wleft\hsize}
+     \includegraphics[width=0.8\hsize]{#2}
+   \end{column}
+   \begin{column}{\wright\hsize}
+    #3
+   \end{column}
+\end{columns}
+}
+
+\newcommand{\frameimgrev}[3][]{
+\ifx\relax#1\relax
+  \FPeval\wleft{0.24}
+  \FPeval\wright{0.75}
+\else
+  \FPeval\wleft{(#1 / 100)}
+  \FPeval\wright{(0.99 - (#1 / 100))}
+\fi
+\begin{columns}
+   \begin{column}{\wright\hsize}
+    #3
+   \end{column}
+   \begin{column}{\wleft\hsize}
+     \includegraphics[width=0.8\hsize]{#2}
+   \end{column}
+\end{columns}
+}
+
+\newcommand<>{\fullimgb}[2]{
+{
+\setbeamercolor{background canvas}{bg=black}
+\pagecolor{black}
+\setbeamercolor{palette primary}{fg=white, bg=black}
+\begin{frame}[standout]
+\note{1-}{#2}
+\begin{tikzpicture}[remember picture,overlay]
+\node[xshift=-0.1cm,yshift=0cm] at (0,0) {\adjustbox{max width=16cm,max height=9cm}{{\includegraphics{../images/#1}}}};
+\end{tikzpicture}
+\end{frame}
+}
+}
+
+\usepackage{graphicx}
+\usepackage{forloop}
+
+\newcounter{max}
+\newcounter{ct}
+
+\newcommand<>{\incpdf}[1]{
+\pdfximage{#1}%
+\setcounter{max}{\pdflastximagepages+1}%
+\forloop{ct}{1}{\value{ct} < \value{max}}{%
+{%
+\setbeamercolor{background canvas}{bg=black}%
+\pagecolor{black}%
+\setbeamercolor{palette primary}{fg=white, bg=black}%
+\begin{frame}[standout]%
+\begin{tikzpicture}[remember picture,overlay]%
+\node[xshift=-0.1cm,yshift=0cm] at (0,0) {\adjustbox{max width=16cm,max height=9cm}{{\includegraphics[page=\thect]{#1}}}};%
+\end{tikzpicture}%
+\end{frame}%
+}%
+}%
+}
+
+\newcommand<>{\fullimg}[2]{
+{
+\setbeamercolor{background canvas}{bg=white}
+\pagecolor{white}
+\setbeamercolor{palette primary}{fg=black, bg=white}
+\begin{frame}[standout]
+\note{1-}{#2}
+\begin{tikzpicture}[remember picture,overlay]
+\node[xshift=-0.1cm,yshift=0cm] at (0,0) {\adjustbox{max width=16cm,max height=9cm}{{\includegraphics{../images/#1}}}};
+\end{tikzpicture}
+\end{frame}
+}
+}
+
+\newcommand{\solidcolor}[1]{
+\setbeamercolor{background canvas}{bg=#1}
+\pagecolor{#1}
+\setbeamercolor{palette primary}{fg=#1, bg=#1}
+}
+
+% Colors 
+\definecolor{tu-red}{HTML}{F72546}
+\definecolor{iaikred}{HTML}{F72546}
+\definecolor{tech-green}{HTML}{8EC63F}
+\definecolor{tech-orange}{HTML}{F36523}
+\definecolor{tech-purple}{HTML}{942977}
+\definecolor{rowhighlight}{rgb}{1.0, 0.88, 0.21}
+\definecolor{greenl}{HTML}{A5D165}
+\definecolor{orangel}{HTML}{F7AD8B}
+\definecolor{metro-green}{HTML}{43C83C}
+\definecolor{metro-red}{HTML}{FA3031}
+\definecolor{metro-blue}{HTML}{52B9E9}
+\definecolor{metro-yellow}{HTML}{FEB80A}
+\definecolor{metro-purple}{HTML}{932AB6}
+\definecolor{metro-orange}{HTML}{F88529}
+\definecolor{metro-darkblue}{HTML}{1171A3}
+\definecolor{metro-gray}{HTML}{7F8C8D}
+
+\usepackage{pdfcomment}
+\renewcommand{\note}[2]{\only<#1>{\tikz[remember picture,overlay]{\node{\pdfmargincomment[opacity=0]{#2}}}}}
+
+% \usepackage{oplotsymbl}
+% 
+% \LetLtxMacro{\oldcircletfill}{\circletfill}
+% \LetLtxMacro{\oldcirclet}{\circlet}
+% \LetLtxMacro{\oldcircletfillhl}{\circletfillhl}
+% \renewcommand{\circletfill}{\raisebox{-0.9pt}{\tikzsetnextfilename{circletfill}\oldcircletfill}}
+% \renewcommand{\circlet}{\raisebox{-0.9pt}{\tikzsetnextfilename{circlet}\oldcirclet}}
+% \renewcommand{\circletfillhl}{\raisebox{-0.9pt}{\tikzsetnextfilename{circletfillhl}\oldcircletfillhl}}
+% 
+% \usepackage{pifont} % symboles
+% \newcommand{\xmark}{\leavevmode{\color{red}\ding{55}}}%
+% \newcommand{\cmark}{\leavevmode{\color{green!75!black}\ding{51}}}%
+% 
+% \newcommand{\cmarkfull}{\multicolumn{1}{c} {\circletfill \phantom{*}}}
+% \newcommand{\cmarkempty}{\multicolumn{1}{c} {\circlet \phantom{*}}}
+% \newcommand{\cmarkhalf}{\multicolumn{1}{c} {\circletfillhl \phantom{*}}}
+% 
+% \newcommand{\cstarletfill}{\multicolumn{1}{c} {\starletfill \phantom{*}}}
+% \newcommand{\cstarlet}{\multicolumn{1}{c} {\starlet \phantom{*}}}
+% 
+% 
+% \newcommand{\cmarkfulls}{\multicolumn{1}{c} {\circletfill *}}
+% \newcommand{\cmarkemptys}{\multicolumn{1}{c} {\circlet *}}
+% \newcommand{\cmarkhalfs}{\multicolumn{1}{c} {\circletfillhl *}}
+% 
+% \newcommand{\cmarkfulld}{\multicolumn{1}{c} {\circletfill $^\dagger$}}
+% \newcommand{\cmarkemptyd}{\multicolumn{1}{c} {\circlet $^\dagger$}}
+% \newcommand{\cmarkhalfd}{\multicolumn{1}{c} {\circletfillhl $^\dagger$}}
+
+\newcommand{\remark}[1]{{\footnotesize \color{black!40} #1}}
+
+\newcommand{\SIx}[1]{\num{#1}\relax}
+
+%\usepackage{fontspec}
+
+\pgfplotsset{
+  xkcd/.style={
+    decoration={
+      name=random steps,
+      segment length=2pt,
+      amplitude=0.3pt,
+    },
+    line width=1pt,
+    line join=round,
+    line cap=round,
+    decorate,
+  },
+}
+\pgfplotsset{
+  xkcd axis/.style={%
+    axis on top,
+    xkcd,
+    every non boxed x axis/.style={
+      xtick align=center,
+      enlarge x limits=true,
+      x axis line style={-Straight Barb[round]}
+    },
+    every non boxed y axis/.style={
+      ytick align=center,
+      enlarge y limits=true,
+      y axis line style={-Straight Barb[round]}
+    },
+    every tick/.append style={
+      black,
+      xkcd,
+    },
+    every axis plot post/.append style={
+      double= . ,
+      mark=none,
+      draw=white,
+      double distance=1pt,
+    },
+    every axis legend/.append style={
+      xkcd,
+    },
+    tick label style={/pgf/number format/assume math mode=true},
+    execute at begin axis={\ECFAugie},
+  },
+}
+\usepgflibrary{arrows.meta}
+
+\makeatletter
+\def\pgfmathsaveseed{
+    \xdef\pgfmath@savedseed{\pgfmath@rnd@z}
+}
+\def\pgfmathloadseed{
+    \xdef\pgfmath@rnd@z{\pgfmath@savedseed}
+}
+
+\def\beamerframeseed{
+    \only<1>{\pgfmathsaveseed}
+    \only<2->{\pgfmathloadseed}
+}
+
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{pdfpc-commands}
+\newcommand{\inlineimg}[1]{\raisebox{-0.33\baselineskip}{\includegraphics[height=\baselineskip]{#1}}}
+
+\newcommand<>{\fullvideo}[2]{
+{
+\setbeamercolor{background canvas}{bg=black}
+\pagecolor{black}
+\setbeamercolor{palette primary}{fg=white, bg=black}
+\begin{frame}[standout]
+\note{1-}{#2}
+\begin{tikzpicture}[remember picture,overlay]
+\node[xshift=-0.1cm,yshift=0cm] at (0,0) {\adjustbox{max width=16cm,max height=9cm}{{\href{run:../images/#1.mp4?autostart}{\includegraphics{../images/#1}}}}};
+\end{tikzpicture}
+\end{frame}
+}
+}
+
